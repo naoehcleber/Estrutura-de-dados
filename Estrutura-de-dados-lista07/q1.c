@@ -24,6 +24,7 @@ void exibirOpcoes() {
 void inicializar(LSEInteiros* lista){
     lista->inicio = NULL;
     lista->fim = NULL;
+    lista->qtd = 0;
 }
 
 int isFull(LSEInteiros lista){
@@ -31,7 +32,7 @@ int isFull(LSEInteiros lista){
 }
 
 int isEmpty(LSEInteiros lista){
-    if(lista.inicio == NULL && lista.fim == NULL){
+    if(lista.qtd == 0){
         return 1;
     }else {
         return 0;
@@ -39,40 +40,90 @@ int isEmpty(LSEInteiros lista){
 }
 
 void inserir(LSEInteiros* lista, int valor){
-    TNoLSE* novo = (TNoLSE*)malloc(sizeof(TNoLSE));
-
-    novo->info = valor;
-    novo->prox = NULL;
+    TNoLSE* novo , *atual, *anterior;
     
-
     if(isEmpty(*lista) == 1){
+        novo = (TNoLSE*)malloc(sizeof(TNoLSE));
+
+        novo->info = valor;
+        novo->prox = NULL;
+
         lista->inicio = novo;
         lista->fim = novo;
-        //lista->qtd += 1;
-    } else {
+        lista->qtd = 1;
+    } else if (valor< lista->inicio->info){
+        //inserçao no inicio
+        novo = (TNoLSE*)malloc(sizeof(TNoLSE));
+
+        novo->info = valor;
+        novo->prox = lista->inicio;
+
+        lista->inicio = novo;
+        lista->qtd++;
+
+    }else if(valor == lista->inicio->info){
+        //valor repetido
+        printf("Valor repetido ! Insercao nao efetuada! \n");
+    }else if (valor > lista->fim->info){
+        novo = (TNoLSE*)malloc(sizeof(TNoLSE));
+
+        novo->info = valor;
+        novo->prox = NULL;
         lista->fim->prox = novo;
         lista->fim = novo;
         //lista->qtd += 1;
 
+    } else if (valor == lista->fim->info){
+        printf("Valor repetido ! Insercao nao efetuada! \n");
+    } else {
+        anterior = lista->inicio;
+        atual = anterior->prox;
+        while(1){
+            if(valor == atual->info){
+                printf("Valor repetido ! Insercao nao efetuada \n");
+                break;
+            }else if (atual->info > valor){
+                novo = (TNoLSE*)malloc(sizeof(TNoLSE));
+                novo->info = valor;
+
+                anterior->prox - novo;
+                novo->prox = atual;
+                printf("Insercaoefetuada");
+                break;
+            } else {
+                atual = atual->prox;
+                anterior = anterior->prox;
+                
+            }
+        }
     }
-    lista->qtd++;
+    
 }
 
-int remover(LSEInteiros* lista){
-    int num;
-    TNoLSE* aux;
-
-    aux = lista->inicio;
-    num = aux->info;
-
-    lista->inicio = lista->inicio->prox;
-
-    if(lista->inicio == NULL){
-        lista->fim = NULL;
+int remover(LSEInteiros* lista, int valor){
+    TNoLSE *atual, *anterior;
+    atual = lista;
+    anterior = NULL;
+    while(atual->info <= valor){
+        anterior = atual;
+        atual = atual->prox;
+        if(atual->info == valor ){
+            printf("Valor encontrado !\n");
+        }
+    
     }
-
-    free(aux);
-    return num;
+    if(atual != NULL){
+        if(anterior == NULL){
+            lista = atual->prox;
+        } else {
+            anterior->prox = atual->prox;
+        }
+        free(atual);
+    }
+    
+  
+    
+    
 }
 
 
@@ -82,7 +133,7 @@ void list(LSEInteiros lista){
     aux = lista.inicio;
 
     while(aux != NULL){
-        printf("%d) %d \n",lista.qtd,aux->info);
+        printf("%d \n",aux->info);
         aux = aux->prox;
     }
     printf("\n");
@@ -111,7 +162,9 @@ int main() {
             printf("Lista vazia! \n");
 
         }else{
-            remover(&listaInteiros);
+            printf("Insira um numero para remover : ");
+            scanf("%d",&num);
+            remover(&listaInteiros, num);
         }
     break;
     case 3: 
