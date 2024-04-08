@@ -99,28 +99,30 @@ void inserir(LSEInteiros* lista, int valor) {
 
 int remover(LSEInteiros* lista, int valor){
     TNoLSE *atual, *anterior;
-    atual = lista->inicio->prox;
+    atual = lista->inicio;
     anterior = NULL;
-    
-    while(atual != NULL){
-        printf("Iniciando busca \n");
-        if(atual->info == valor){
-            printf("Elemento achado\n");
-            if(anterior == NULL){
-                //se estiver no inicio da fila
-                lista->inicio = atual->prox;
-            }else if (anterior != NULL && atual != NULL){
-                lista->inicio->prox = atual->prox;
-            }
+    while(atual->info <= valor){
+        printf("Iniciando busca...\n");
+        if(lista->inicio->info == valor ){
+            //valor na primeira posicao da lista
+            printf("Valor achado no inicio\n");
+            lista->qtd--;
+            lista->inicio = lista->inicio->prox;
+            free(atual);
+            return valor;
+        } else if(atual->info == valor){
+            printf("Valor achado\n");
+            atual = atual->prox;
+            anterior->prox = atual;
+            lista->qtd--;
 
-            return atual->info;
-        }
-        
+            return valor;
+
+        } 
+
         //procura o elemento
         anterior = atual;
         atual = atual->prox;
-
-
     }
     printf("elemento nao esta na lista\n");
     return -1;
