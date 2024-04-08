@@ -39,91 +39,92 @@ int isEmpty(LSEInteiros lista){
     }
 }
 
-void inserir(LSEInteiros* lista, int valor){
-    TNoLSE* novo , *atual, *anterior;
-    
-    if(isEmpty(*lista) == 1){
+void inserir(LSEInteiros* lista, int valor) {
+    TNoLSE* novo, *atual, *anterior;
+    if (isEmpty(*lista)) {
         novo = (TNoLSE*)malloc(sizeof(TNoLSE));
-
         novo->info = valor;
         novo->prox = NULL;
-
         lista->inicio = novo;
         lista->fim = novo;
         lista->qtd = 1;
-    } else if (valor< lista->inicio->info){
-        //inserçao no inicio
+        printf("Inserção efetuada. \n");
+    }
+    else if (valor < lista->inicio->info) {
         novo = (TNoLSE*)malloc(sizeof(TNoLSE));
-
         novo->info = valor;
         novo->prox = lista->inicio;
-
         lista->inicio = novo;
         lista->qtd++;
-
-    }else if(valor == lista->inicio->info){
-        //valor repetido
-        printf("Valor repetido ! Insercao nao efetuada! \n");
-    }else if (valor > lista->fim->info){
+        printf("Inserção efetuada. \n");
+    }
+    else if (valor == lista->inicio->info) {
+        printf("Valor repetido. Inserção não efetuada. \n");
+    }
+    else if (valor > lista->fim->info) {
         novo = (TNoLSE*)malloc(sizeof(TNoLSE));
-
         novo->info = valor;
         novo->prox = NULL;
         lista->fim->prox = novo;
         lista->fim = novo;
-        //lista->qtd += 1;
-
-    } else if (valor == lista->fim->info){
-        printf("Valor repetido ! Insercao nao efetuada! \n");
-    } else {
+        lista->qtd++;
+        printf("Inserção efetuada. \n");
+    }
+    else if (valor == lista->fim->info) {
+        printf("Valor repetido. Inserção não efetuada. \n");
+    }
+    else {
         anterior = lista->inicio;
         atual = anterior->prox;
-        while(1){
-            if(valor == atual->info){
-                printf("Valor repetido ! Insercao nao efetuada \n");
+        while (1) {
+            if (valor == atual->info) {
+                printf("Valor repetido. Inserção não efetuada. \n");
                 break;
-            }else if (atual->info > valor){
+            }
+            else if (atual->info > valor) {
                 novo = (TNoLSE*)malloc(sizeof(TNoLSE));
                 novo->info = valor;
-
-                anterior->prox - novo;
+                anterior->prox = novo;
                 novo->prox = atual;
-                printf("Insercaoefetuada");
+                printf("Inserção efetuada. \n");
                 break;
-            } else {
+            }
+            else {
                 atual = atual->prox;
                 anterior = anterior->prox;
-                
             }
         }
     }
-    
 }
 
 int remover(LSEInteiros* lista, int valor){
     TNoLSE *atual, *anterior;
-    atual = lista;
+    atual = lista->inicio->prox;
     anterior = NULL;
-    while(atual->info <= valor){
+    
+    while(atual != NULL){
+        printf("Iniciando busca \n");
+        if(atual->info == valor){
+            printf("Elemento achado\n");
+            if(anterior == NULL){
+                //se estiver no inicio da fila
+                lista->inicio = atual->prox;
+            }else if (anterior != NULL && atual != NULL){
+                lista->inicio->prox = atual->prox;
+            }
+
+            return atual->info;
+        }
+        
+        //procura o elemento
         anterior = atual;
         atual = atual->prox;
-        if(atual->info == valor ){
-            printf("Valor encontrado !\n");
-        }
-    
+
+
     }
-    if(atual != NULL){
-        if(anterior == NULL){
-            lista = atual->prox;
-        } else {
-            anterior->prox = atual->prox;
-        }
-        free(atual);
-    }
-    
-  
-    
-    
+    printf("elemento nao esta na lista\n");
+    return -1;
+ 
 }
 
 
@@ -164,13 +165,12 @@ int main() {
         }else{
             printf("Insira um numero para remover : ");
             scanf("%d",&num);
-            remover(&listaInteiros, num);
+            printf("Elemento %d removido\n",remover(&listaInteiros, num));
+
         }
     break;
     case 3: 
         list(listaInteiros);
-        //ordernar(&listaInteiros);
-        //list(listaInteiros);
 
     break;
     case 0: printf("Fim de programa! \n");
