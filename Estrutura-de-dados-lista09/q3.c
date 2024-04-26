@@ -94,6 +94,10 @@ void inserir(LDE *lista, int valor){
     }
 }
 
+void remover(LDE *lista, int valor){
+    
+}
+
 void main(){
     LDE minhaLista;
     int num;
@@ -107,5 +111,3 @@ void main(){
 
 
 }
-
-

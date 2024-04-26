@@ -192,6 +192,10 @@ void cancelarTarefa(LDE *lista, char string[]){
     }
 }
 
+void alterarPrioridade(LDE *lista){
+    
+}
+
 void exibirOpcoes() {
     printf("Opcoes: \n");
     printf("1 - Inserir valor ordenado na lista \n");
@@ -227,7 +231,7 @@ void main(){
             buscar(minhaLista, desc);
             break;
         case 3: 
-            //ExecutarTarefa(&minhaLista);
+            ExecutarTarefa(&minhaLista);
             break;
         case 4: 
             printf("Insira o valor que deseja cancelar : ");
