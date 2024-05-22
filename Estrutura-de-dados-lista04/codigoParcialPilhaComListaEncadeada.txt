@@ -1,0 +1,81 @@
+// Esboço do código de uma Stack de números inteiros implementada utilizando o conceito de lista encadeada.
+// Implementar as partes do código que estão incompletas.
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#include <stdio.h>
+
+typedef struct noPilha {
+    int info;
+    struct noPilha* prox;
+} TNoPilha;
+typedef TNoPilha* Stack;
+
+void inicializar(Stack* pilha) {
+    *pilha = NULL;
+}
+
+void push(Stack* pilha, int valor) { // empilhar
+   // em desenvolvimento ....
+
+}
+
+int pop(Stack* pilha) {  // desempilhar
+    // em desenvolvimento.....
+    
+}
+
+int top(Stack pilha) {   // retornar o valor que está no topo
+    // em desenvolvimento.....
+  
+}
+
+int isFull(Stack pilha) {  // checa se a pilha está cheia
+    // em desenvolvimento.....
+    
+}
+
+int isEmpty(Stack pilha) { // checa se a pilha está vazia
+    // em desenvolvimento ....
+   
+}
+
+void exibirOpcoes() {
+    printf("Opções: \n");
+    printf("1 - Push \n");
+    printf("2 - Pop \n");
+    printf("3 - Top \n");
+    printf("0 - Encerrar programa \n");
+    printf("Informe a opção desejada: ");
+}
+
+int main()
+{
+    Stack minhaPilha;
+    inicializar(&minhaPilha);
+    int op, num;
+    do {
+        exibirOpcoes();
+        scanf("%d", &op);
+        switch (op) {
+        case 1: printf("Informe o valor: ");
+            scanf("%d", &num);
+            if (isFull(minhaPilha) == 0) {
+                push(&minhaPilha, num);
+                printf("Valor empilhado!");
+            }
+            else {
+                printf("Stack full\n");
+            }
+            break;
+        case 2: // em desenvolvimento.....
+            break;
+        case 3: // em desenvolvimento ....
+            break;
+        case 0: printf("Fim de programa!");
+            break;
+        default: printf("Opção inválida!");
+        }
+    } while (op != 0);
+    return 0;
+}

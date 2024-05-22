@@ -87,7 +87,32 @@ void inserirInicio(LDE *lista, int valor){
 }
 
 void inserirFinal(LDE *lista, int valor){
+    TNoLDE *novo;
+    TNoLDE *retorno;
+    if(isEmpty(*lista) == 1){
+        novo = (TNoLDE*)malloc(sizeof(TNoLDE));
+        novo->info = valor;
+        novo->anterior = lista->fim;
+        novo->prox = lista->inicio;
 
+        lista->inicio = novo;
+        lista->fim = novo;
+        lista->qntd++;
+    } else {
+        retorno = buscar(*lista, valor);
+        if(retorno == NULL) { 
+        novo = (TNoLDE*)malloc(sizeof(TNoLDE));
+        novo->info = valor;
+        novo->anterior = lista->fim;
+        novo->prox = NULL;
+
+        lista->fim->prox = novo;
+        lista->fim = novo;
+        lista->qntd++; 
+        } else {
+            printf("Elemento repetido !\n");
+        }
+    }
 }
 
 
@@ -116,6 +141,41 @@ void listInversa(LDE lista){
     }
     printf("\n");
     
+}
+
+void removerPrimeiro(LDE *lista){
+    TNoLDE *aux;
+
+    if(isEmpty(*lista) == 1){
+         printf("Lista vazia \n");
+    }
+    else if(lista->inicio == lista->fim){
+        lista->inicio = NULL;
+        lista->fim = NULL;
+    } else {
+        aux = lista->inicio;
+        lista->inicio = lista->inicio->prox;
+        lista->inicio->anterior = NULL;
+        lista->qntd--;
+        free(aux);
+    }
+}
+
+void removerUltimo(LDE *lista){
+    TNoLDE *aux;
+
+    if(isEmpty(*lista) == 1){
+         printf("Lista vazia \n");
+    }
+    else if(lista->inicio == lista->fim){
+        lista->inicio = NULL;
+        lista->fim = NULL;
+    } else {
+        lista->fim = lista->fim->anterior;
+        lista->fim->prox = NULL;
+        free(aux);
+        lista->qntd--;
+    }
 }
 
 void removerEspecifico(LDE *lista, int valor){
@@ -155,13 +215,13 @@ void removerEspecifico(LDE *lista, int valor){
 }
 
 void exibirOpcoes() {
-    printf("Opções: \n");
-    printf("1 - Inserir valor no início da lista \n");
+    printf("Opcoes: \n");
+    printf("1 - Inserir valor no inicio da lista \n");
     printf("2 - Inserir valor no final da lista \n");
     printf("3 - Remover primeiro da lista \n");
-    printf("4 - Remover último da lista \n");
-    printf("5 - Exibir lista do início para o final \n");
-    printf("6 - Exibir lista do final para o início \n");
+    printf("4 - Remover ultimo da lista \n");
+    printf("5 - Exibir lista do inicio para o final \n");
+    printf("6 - Exibir lista do final para o inicio \n");
     printf("7 - Remover valor especifico \n");
     printf("0 - Encerrar programa \n");
     printf("Informe a opção desejada: ");
@@ -182,11 +242,15 @@ void main(){
             scanf("%d",&valor);
             inserirInicio(&minhaLista, valor);
             break;
-        case 2: // em desenvolvimento
+        case 2: printf("Informe o valor a ser inserido: ");
+            scanf("%d",&valor);
+            inserirFinal(&minhaLista, valor);
             break;
-        case 3: // em desenvolvimento
+        case 3: 
+            
+            removerPrimeiro(&minhaLista);
             break;
-        case 4: // em desenvolvimento
+        case 4: removerUltimo(&minhaLista);
             break;
         case 5: list(minhaLista);
             break;
