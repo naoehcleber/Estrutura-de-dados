@@ -5,7 +5,7 @@
 typedef struct noLDE{
     struct noLDE *anterior;
     char nome[50];
-    int mediaFinal;
+    float mediaFinal;
     int qtdFaltas;
     struct noLDE *prox;
 }Node;
@@ -43,13 +43,7 @@ Node *criarNo(char nome[], int mediaFinal, int qtdFaltas){
 } 
 
 void cadastrar(LDECircular *lista, char nome[], float mediaFinal, int qtdFaltas){
-    Node *novo, *atual;
-
-    atual = lista->inicio;
-
-    
-
-
+    Node *novo, *atual, *proximo;
 
     if(isEmpty(*lista) == 1){
         //se a lista estiver vazia
@@ -64,8 +58,24 @@ void cadastrar(LDECircular *lista, char nome[], float mediaFinal, int qtdFaltas)
         lista->qntd++;
         lista->fim->prox = lista->inicio;
     } else {
-        while(atual != NULL){   
-            if(strcmp(nome, lista->inicio->nome) == -1){
+           if(strcmp(nome, lista->inicio->nome) == 0){
+                printf("Nome identico achado, insercao cancelada!\n");
+                return;
+           } else if (strcmp(nome,lista->fim->nome) == 0){
+                printf("Nome identico achado, insercao cancelada!\n");
+                return;
+           } else{
+                atual = lista->inicio;
+                proximo = atual->prox;
+                while(1){
+                    if(strcmp(nome, atual->nome) == 0){
+                        printf("Nome identico achado, insercao cancelada!\n");
+                        return;
+                    }
+                 }
+           }
+
+            if(strcmp(nome, lista->inicio->nome) < 0){
                 //insercao no inicio
                 novo = criarNo(nome, mediaFinal, qtdFaltas);
 
@@ -75,7 +85,7 @@ void cadastrar(LDECircular *lista, char nome[], float mediaFinal, int qtdFaltas)
                 lista->qntd++;
 
                 lista->inicio->anterior = lista->fim;
-            } else if (strcmp(nome, lista->fim->nome) == 1){
+            } else if (strcmp(nome, lista->fim->nome) > 0){
                 //insercao no fim
                 novo = criarNo(nome, mediaFinal, qtdFaltas);
 
@@ -88,28 +98,31 @@ void cadastrar(LDECircular *lista, char nome[], float mediaFinal, int qtdFaltas)
                 lista->fim->prox = lista->inicio;
             } else {
                 //insercao no meio
-                atual = lista->inicio->prox;
-                while(atual != NULL){
-                    if(strcmp(nome, atual->nome) == -1){
+                atual = lista->inicio;
+                proximo = atual->prox;
+                while(1){
+                    if(strcmp(nome, proximo->nome) < 0){
                         novo = criarNo(nome, mediaFinal, qtdFaltas);
 
                         novo->prox = atual;
+                        lista->qntd++;
+                        return;
                     } else {
                         atual = atual->prox;
-                    }
+                   }
                 }                
             }
-        }
     }
 }
+
 
 void listar(LDECircular lista){
     Node *aux;
     aux = lista.inicio;
     for(int i = 0; i < lista.qntd; i++){
-        printf("%s\n",aux->nome);
-        printf("%f",aux->mediaFinal);
-        printf("%d", aux->qtdFaltas);
+        printf("Nome : %s\n",aux->nome);
+        printf("Media final : %f\n",aux->mediaFinal);
+        printf("Quantidade de faltas : %d\n", aux->qtdFaltas);
 
         aux = aux->prox;
     }
@@ -140,13 +153,13 @@ void main(){
         switch(op){
             case 1:
                 printf("Escolha qual turma a inserir o aluno : \n");
-                printf("1 - Turma A");
-                printf("2 - Turma B");
-                printf("3 - Turma C");
+                printf("1 - Turma A\n");
+                printf("2 - Turma B\n");
+                printf("3 - Turma C\n");
                 scanf("%d", &escolhaTurma);
 
                 printf("Insira o nome do aluno : ");
-                gets(nome);
+                scanf("%s",nome);
                 printf("Insira a media final do aluno : ");
                 scanf("%f",&mediaFinal);
                 printf("Insira a quantidade de faltas do aluno : ");
@@ -162,9 +175,9 @@ void main(){
                 break;
             case 2 :
                 printf("Escolha qual turma a listar : \n");
-                printf("1 - Turma A");
-                printf("2 - Turma B");
-                printf("3 - Turma C");
+                printf("1 - Turma A\n");
+                printf("2 - Turma B\n");
+                printf("3 - Turma C\n");
                 scanf("%d", &escolhaTurma);
                 if(escolhaTurma == 1){
                     listar(turmaA);
