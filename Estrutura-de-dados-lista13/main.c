@@ -58,60 +58,54 @@ void cadastrar(LDECircular *lista, char nome[], float mediaFinal, int qtdFaltas)
         lista->qntd++;
         lista->fim->prox = lista->inicio;
     } else {
-           if(strcmp(nome, lista->inicio->nome) == 0){
-                printf("Nome identico achado, insercao cancelada!\n");
-                return;
-           } else if (strcmp(nome,lista->fim->nome) == 0){
-                printf("Nome identico achado, insercao cancelada!\n");
-                return;
-           } else{
-                atual = lista->inicio;
-                proximo = atual->prox;
-                while(1){
-                    if(strcmp(nome, atual->nome) == 0){
-                        printf("Nome identico achado, insercao cancelada!\n");
-                        return;
-                    }
-                 }
-           }
+        if(strcmp(nome, lista->inicio->nome) < 0){
+            //insercao no inicio
+            novo = criarNo(nome, mediaFinal, qtdFaltas);
 
-            if(strcmp(nome, lista->inicio->nome) < 0){
-                //insercao no inicio
-                novo = criarNo(nome, mediaFinal, qtdFaltas);
+            novo->prox = lista->inicio->prox;
+            novo->anterior = NULL;
+            lista->inicio = novo;
+            lista->qntd++;
 
-                novo->prox = lista->inicio->prox;
-                novo->anterior = NULL;
-                lista->inicio = novo;
-                lista->qntd++;
+            lista->inicio->anterior = lista->fim;
+        }else if (strcmp(nome, lista->inicio->nome) == 0){
+            printf("Aluno ja cadastrado, insercao cancelada!\n");
+            return;
+        } else if (strcmp(nome, lista->fim->nome) > 0){
+            //insercao no fim
+            novo = criarNo(nome, mediaFinal, qtdFaltas);
 
-                lista->inicio->anterior = lista->fim;
-            } else if (strcmp(nome, lista->fim->nome) > 0){
-                //insercao no fim
-                novo = criarNo(nome, mediaFinal, qtdFaltas);
-
-                novo->anterior = lista->fim->anterior;
-                novo->prox = NULL;
-                lista->fim->prox = novo;
-                lista->fim = novo;
-                
-                lista->qntd++;
-                lista->fim->prox = lista->inicio;
-            } else {
-                //insercao no meio
-                atual = lista->inicio;
-                proximo = atual->prox;
-                while(1){
-                    if(strcmp(nome, proximo->nome) < 0){
-                        novo = criarNo(nome, mediaFinal, qtdFaltas);
-
-                        novo->prox = atual;
-                        lista->qntd++;
-                        return;
-                    } else {
-                        atual = atual->prox;
-                   }
-                }                
-            }
+            novo->anterior = lista->fim->anterior;
+            novo->prox = NULL;
+            lista->fim->prox = novo;
+            lista->fim = novo;
+            
+            lista->qntd++;
+            lista->fim->prox = lista->inicio;
+        }else if (strcmp(nome, lista->fim->nome) == 0){
+            printf("Aluno ja cadastrado, insercao cancelada!\n");
+            return;
+        }else {
+            //insercao no meio
+            atual = lista->inicio;
+            proximo = atual->prox;
+            while(proximo != lista->inicio){
+                if(strcmp(nome, proximo->nome) < 0){
+                    novo = criarNo(nome, mediaFinal, qtdFaltas);
+                    atual->prox = novo;
+                    novo->anterior = atual;
+                    atual = novo;
+                    novo->prox = proximo;
+                    lista->qntd++;
+                    return;
+                }else if (strcmp(nome, proximo->nome) == 0){
+                    printf("Aluno ja cadastrado, insercao cancelada!\n");
+                    return;
+                } else {
+                    atual = atual->prox;
+                }
+            }                
+        }
     }
 }
 
@@ -127,6 +121,89 @@ void listar(LDECircular lista){
         aux = aux->prox;
     }
 }
+
+Node* consultar(LDECircular lista, char nome[]){
+    Node *aux;
+    aux = lista.inicio;
+
+    if(isEmpty(lista) == 1){
+        return NULL;
+    }
+
+    for(int i = 0; i < lista.qntd; i++){
+        if(strcmp(aux->nome, nome) == 0){
+            return aux;
+        }
+
+        aux = aux->prox;
+    }
+    return NULL;
+}
+
+void alterarMedia(LDECircular *lista, char nome[]){
+    Node *aux;
+    Node *consulta;
+    float novaMedia;
+
+    consulta = consultar(*lista, nome);
+    if(isEmpty(*lista) == 1){
+        printf("Nenhum aluno cadastrado\n");
+    } else {
+        aux = lista->inicio;
+        for(int i = 0; i < lista->qntd; i++){
+            if(aux == consulta){
+                printf("Aluno cadastrado, prosseguindo...\n");
+                break;
+            }
+            aux = aux->prox;
+        }
+        if(aux == consulta){
+            printf("Insira a nova media do aluno : ");
+            scanf("%f", &novaMedia);
+
+            aux->mediaFinal = novaMedia;
+        }   
+
+    }
+}
+
+void alterarFaltas(LDECircular *lista, char nome[]){
+    Node *aux;
+    Node *consulta;
+    int faltasNovas, escolha;
+
+    consulta = consultar(*lista, nome);
+    if(isEmpty(*lista) == 1){
+        printf("Nenhum aluno cadastrado\n");
+    } else {
+        aux = lista->inicio;
+        for(int i = 0; i < lista->qntd; i++){
+            if(aux == consulta){
+                printf("Aluno cadastrado, prosseguindo...\n");
+                break;
+            }
+            aux = aux->prox;
+        }
+        if(aux == consulta){
+            printf("Deseja adicionar ou abonar faltas ?\n");
+            printf("1 - Adicionar \n");
+            printf("2 - Abonar\n");
+            scanf("%d",&escolha);
+            if(escolha == 1){
+                printf("Insira quantas faltas adicionar : ");
+                scanf("%d", &faltasNovas);
+                aux->qtdFaltas = aux->qtdFaltas + faltasNovas;
+            } else if (escolha == 2){
+                printf("Insira quantas faltas abonar : ");
+                scanf("%d", &faltasNovas);
+                aux->qtdFaltas = aux->qtdFaltas - faltasNovas;
+            }
+        }   
+
+    }
+}
+
+
 
 void imprimirMenu(){
     printf("1 - Cadastrar \n");
@@ -188,10 +265,36 @@ void main(){
                 }
                 break;
             case 3 :
-                //desenvolvendo
+                printf("Escolha qual turma : \n");
+                printf("1 - Turma A\n");
+                printf("2 - Turma B\n");
+                printf("3 - Turma C\n");
+                scanf("%d", &escolhaTurma);
+                printf("Digite o nome do aluno o qual deseja alterar a media : ");
+                scanf("%s",nome);
+                if(escolhaTurma == 1){    
+                    alterarMedia(&turmaA, nome);
+                } else if (escolhaTurma == 2){
+                    alterarMedia(&turmaB, nome);
+                } else if (escolhaTurma == 3){
+                   alterarMedia(&turmaC, nome);
+                }
                 break;
             case 4:
-                //desenvolvendo
+                printf("Escolha qual turma : \n");
+                printf("1 - Turma A\n");
+                printf("2 - Turma B\n");
+                printf("3 - Turma C\n");
+                scanf("%d", &escolhaTurma);
+                printf("Digite o nome do aluno o qual deseja alterar a media : ");
+                scanf("%s",nome);
+                if(escolhaTurma == 1){    
+                    alterarFaltas(&turmaA, nome);
+                } else if (escolhaTurma == 2){
+                    alterarFaltas(&turmaB, nome);
+                } else if (escolhaTurma == 3){
+                   alterarFaltas(&turmaC, nome);
+                }
                 break;
             case 5:
                 //desenvolvendo
