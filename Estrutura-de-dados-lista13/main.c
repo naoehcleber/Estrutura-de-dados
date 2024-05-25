@@ -203,6 +203,74 @@ void alterarFaltas(LDECircular *lista, char nome[]){
     }
 }
 
+void exibir(LDECircular lista, char nome[]){
+    Node *aux;
+    Node *consulta;
+    int faltasNovas, escolha;
+
+    consulta = consultar(lista, nome);
+    if(isEmpty(lista) == 1){
+        printf("Nenhum aluno cadastrado\n");
+    } else {
+        aux = lista.inicio;
+        for(int i = 0; i < lista.qntd; i++){
+            if(aux == consulta){
+                printf("Aluno cadastrado, prosseguindo...\n");
+                break;
+            }else if (i == lista.qntd && aux != consulta){
+                printf("Aluno nao encontrado, cancelando operacao...\n");
+                return;
+            }
+            aux = aux->prox;
+        }
+        if(aux == consulta){
+            printf("Media Final : %f\n", aux->mediaFinal);
+            printf("Quantidade de faltas : %d\n", aux->qtdFaltas);
+        }   
+
+    }
+}
+
+void remover(LDECircular *lista, char nome[]){
+    Node *aux;
+    Node* consulta;
+
+    consulta = consultar(*lista, nome);
+    if(isEmpty(*lista)){
+        printf("Nenhum aluno cadastrado \n");
+    } else {
+        aux = lista->inicio;
+        for(int i = 0; i < lista->qntd; i++){
+            if(aux == consulta){
+                printf("Aluno cadastrado, prosseguindo...\n");
+                break;
+            }else if (i == lista->qntd && aux != consulta){
+                printf("Aluno nao encontrado, cancelando operacao...\n");
+                return;
+            }
+            aux = aux->prox;
+        }
+        if(aux == consulta){
+            if(aux == lista->inicio){
+                //remocao no inicio
+                lista->inicio = lista->inicio->prox;
+                lista->fim->prox = lista->inicio;
+                lista->qntd--;
+                free(aux);
+            } else if (aux == lista->fim){
+                //remocao no final
+                lista->fim = lista->fim->anterior;
+                lista->fim->prox = lista->inicio;
+                lista->qntd--;
+                free(aux);
+            } else {
+                //remocao no meio
+                
+            }
+        }
+    }
+    
+}
 
 
 void imprimirMenu(){
@@ -297,7 +365,20 @@ void main(){
                 }
                 break;
             case 5:
-                //desenvolvendo
+                printf("Escolha qual turma : \n");
+                printf("1 - Turma A\n");
+                printf("2 - Turma B\n");
+                printf("3 - Turma C\n");
+                scanf("%d", &escolhaTurma);
+                printf("Digite o nome do aluno o qual deseja consultar : ");
+                scanf("%s",nome);
+                if(escolhaTurma == 1){    
+                    exibir(turmaA, nome);
+                } else if (escolhaTurma == 2){
+                    exibir(turmaB, nome);
+                } else if (escolhaTurma == 3){
+                   exibir(turmaC, nome);
+                }
                 break;
             case 6:
                 //desenvolvendo
