@@ -251,22 +251,46 @@ void remover(LDECircular *lista, char nome[]){
             aux = aux->prox;
         }
         if(aux == consulta){
-            if(aux == lista->inicio){
+            if(lista->qntd == 1){
+                lista->inicio = NULL;
+                lista->fim = NULL;
+                lista->qntd--;
+            } else if(aux == lista->inicio){
                 //remocao no inicio
                 lista->inicio = lista->inicio->prox;
                 lista->fim->prox = lista->inicio;
                 lista->qntd--;
-                free(aux);
             } else if (aux == lista->fim){
                 //remocao no final
                 lista->fim = lista->fim->anterior;
                 lista->fim->prox = lista->inicio;
                 lista->qntd--;
-                free(aux);
             } else {
                 //remocao no meio
-                
+                aux->prox->anterior = aux->anterior;
+                aux->anterior->prox = aux->prox;
+                lista->qntd--;
             }
+        }
+    }
+    free(aux);
+}
+
+void limpar(LDECircular *lista){
+    
+    for(int i = 0; i < lista->qntd; i++){
+        Node *aux;
+        aux = lista->inicio;
+        if(lista->qntd == 1){
+            lista->inicio == NULL;
+            lista->fim = NULL;
+            lista->qntd--;
+            free(aux);
+        } else {
+            lista->inicio = lista->inicio->prox;
+            lista->fim->prox = lista->inicio;
+            lista->qntd--;
+            free(aux);
         }
     }
     
@@ -275,7 +299,7 @@ void remover(LDECircular *lista, char nome[]){
 
 void imprimirMenu(){
     printf("1 - Cadastrar \n");
-    printf("2 - Listar \n");
+    printf("2 - Listar \n");""
     printf("3 - Alterar media \n");
     printf("4 - Alterar quantidade de faltas \n");
     printf("5 - Exibir \n");
@@ -381,10 +405,35 @@ void main(){
                 }
                 break;
             case 6:
-                //desenvolvendo
+                printf("Escolha qual turma : \n");
+                printf("1 - Turma A\n");
+                printf("2 - Turma B\n");
+                printf("3 - Turma C\n");
+                scanf("%d", &escolhaTurma);
+                printf("Digite o nome do aluno o qual deseja remover : ");
+                scanf("%s",nome);
+                if(escolhaTurma == 1){    
+                    remover(&turmaA, nome);
+                } else if (escolhaTurma == 2){
+                    remover(&turmaB, nome);
+                } else if (escolhaTurma == 3){
+                   remover(&turmaC, nome);
+                }
                 break;
             case 7 :
-                //desenvolvendo
+                printf("Escolha qual turma : \n");
+                printf("1 - Turma A\n");
+                printf("2 - Turma B\n");
+                printf("3 - Turma C\n");
+                scanf("%d", &escolhaTurma);
+                ;
+                if(escolhaTurma == 1){    
+                    limpar(&turmaA);
+                } else if (escolhaTurma == 2){
+                    limpar(&turmaB);
+                } else if (escolhaTurma == 3){
+                   limpar(&turmaC);
+                }
                 break;
             case 0:
                 break;
