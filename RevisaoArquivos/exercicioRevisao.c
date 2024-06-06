@@ -1,5 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
+#include <string.h>
+
 
 typedef struct Aluno {
     char ra[12];
@@ -56,34 +58,112 @@ void exibirTodos (FILE* arq) {
     fseek(arq, 0, SEEK_SET);
     while(!feof(arq)){
         fread(&Aluno, sizeof(TAluno), 1, arq);
-        printf(" Nome : %s\n RA : %s\n Media : %f\n Faltas : %d\n", Aluno.nome, Aluno.ra, Aluno.media, Aluno.faltas);
+        if(Aluno.status == 1){
+            printf(" Nome : %s\n RA : %s\n Media : %f\n Faltas : %d\n", Aluno.nome, Aluno.ra, Aluno.media, Aluno.faltas);
+        }
     }
 }
 
 void exibirAluno(FILE* arq, char ra[]) {
     // Em desenvolvimento: Busca no arquivo um aluno com o RA dado. Se encontrar, exibe os dados.
     // Se não encontrar, informa que o aluno não pertence a turma.
-    
+    TAluno Aluno;
+    int retorno;
+    fseek(arq, 0, SEEK_SET);
+    while(!feof(arq)){
+        fread(&Aluno, sizeof(TAluno), 1, arq);
+        if(Aluno.status == 1){
+            if(strcmp(Aluno.ra, ra) == 0){
+                printf(" Nome : %s\n RA : %s\n Media : %f\n Faltas : %d\n", Aluno.nome, Aluno.ra, Aluno.media, Aluno.faltas);
+            }
+        } else {
+            printf("Aluno nao pertencente a turma");
+        }
+    }
+
 }
 
 void alterarMedia(FILE* arq, char ra[]) {
     // Em desenvolvimento: Busca no arquivo um aluno com o RA dado. Se encontrar, altera a média.
     // Se não encontrar, informa que o aluno não pertence a turma.
+    TAluno Aluno;
+    fseek(arq, 0, SEEK_SET);
+    while(!feof(arq)){
+        fread(&Aluno, sizeof(TAluno), 1, arq);
+        if(Aluno.status == 1){
+            if(strcmp(Aluno.ra, ra) == 0){
+                printf("Insira a nova media : ");
+                scanf("%f", &Aluno.media);
+                fseek(arq, -sizeof(TAluno), SEEK_CUR);
+                fwrite(&Aluno, sizeof(TAluno), 1, arq);
+                break;
+            }
+        } else {
+            printf("Aluno nao pertencente a turma");
+        }
+    }
 }
 
 void alterarFaltas(FILE* arq, char ra[]) {
     // Em desenvolvimento: Busca no arquivo um aluno com o RA dado. Se encontrar, altera as faltas.
     // Se não encontrar, informa que o aluno não pertence a turma.
+    TAluno Aluno;
+    fseek(arq, 0, SEEK_SET);
+    while(!feof(arq)){
+        fread(&Aluno, sizeof(TAluno), 1, arq);
+        if(Aluno.status == 1){
+            if(strcmp(Aluno.ra, ra) == 0){
+                printf("Insira a nova qntd de faltas : ");
+                scanf("%d", &Aluno.faltas);
+                fseek(arq, -sizeof(TAluno), SEEK_CUR);
+                fwrite(&Aluno, sizeof(TAluno), 1, arq);
+                break;
+            }
+        } else {
+            printf("Aluno nao pertencente a turma");
+        }
+    }
 }
+
 
 void removerAluno(FILE* arq, char ra[]) {
     // Em desenvolvimento: Busca no arquivo um aluno com o RA dado. 
     // Se encontrar, remove logicamente o aluno, seja, altera o status para 0 (deletado).
     // Se não encontrar, informa que o aluno não pertence a turma.
+    TAluno Aluno;
+    fseek(arq, 0, SEEK_SET);
+    while(!feof(arq)){
+        fread(&Aluno, sizeof(TAluno), 1, arq);
+        if(Aluno.status == 1){
+            if(strcmp(Aluno.ra, ra) == 0){
+                Aluno.status = 0;
+                fseek(arq, -sizeof(TAluno), SEEK_CUR);
+                fwrite(&Aluno, sizeof(TAluno), 1, arq);
+                break;
+            }
+        } else {
+            printf("Aluno nao pertencente a turma");
+        }
+    }
 }
 
 void limparArquivo(FILE* arq) {
     // Em desenvolvimento: remove fisicamente do arquivo os registros de status 0.
+    TAluno Aluno;
+    FILE* copia = prepararArquivo("copia.dat");
+    fseek(arq, 0, SEEK_SET);
+    fseek(copia, 0, SEEK_SET);
+    while(!feof(arq)){
+        fread(&Aluno, sizeof(TAluno), 1, arq);
+        if(Aluno.status == 0){
+           continue;
+        } 
+        fwrite(&Aluno, sizeof(Aluno), 1, copia);
+    }
+    fclose(arq);
+    fclose(copia);
+    remove("prog1.dat");
+    rename("copia.dat", "prog1.dat");
 }
 
 int main() {
