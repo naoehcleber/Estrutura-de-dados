@@ -1,10 +1,5 @@
-// Aula de reposição - 21-05-2024
-// Exercício de revisão de manipulação de arquivos binários
-
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 typedef struct Aluno {
     char ra[12];
@@ -33,73 +28,42 @@ FILE* prepararArquivo(char nomeArq[]) {
     return arq;
 }
 
-int buscar(FILE *arq, char ra[12]){
-    int contador = -1;
-    int retorno;
-    TAluno novoAluno;
-
-    fseek(arq, 0, SEEK_SET);
-
-    while(!feof(arq)){
-        retorno = fread(&novoAluno, sizeof(TAluno),1,arq);
-        if(retorno == 1){
-            contador++;
-            if(novoAluno.status == 1){
-                if(strcmp(novoAluno.ra, ra) == 0){
-                    
-                    return contador;
-                }
-            }
-        }
-    return -1;
-}
-}
-
 void cadastrarAluno (FILE* arq) {
     // Em desenvolvimento: Solicita os dados de um aluno e grava no final do arquivo
     // OBS: Todo novo registro é gravado no arquivo com status igual a 1 (ativo)
     TAluno novoAluno;
-    int retorno;
-    int busca;
-    printf("Insira o RA do aluno : ");
-    gets(novoAluno.ra);
+    int estado;
+    printf("Nome do aluno : ");
+    scanf("%s",novoAluno.nome); 
+    printf("RA do aluno : ");
+    scanf("%s",novoAluno.ra); 
+    novoAluno.media = 0;
+    novoAluno.faltas = 0;
+    novoAluno.status = 1;
 
-    buscar(arq, novoAluno.ra);
-    if(busca == -1){
-        printf("Insira o nome do aluno : ");
-        gets(novoAluno.nome);
-        printf("Insira o media do aluno : ");
-        scanf("%d",&novoAluno.media);
-        printf("Insira o faltas do aluno : ");
-        scanf("%d",&novoAluno.faltas);
-        novoAluno.status = 1;
-        //garantir que o ponteiro esta no fim do arquivo
-        fseek(arq, 0, SEEK_END);    
-        //escrever no arquivo
-        retorno = fwrite(&novoAluno, sizeof(TAluno), 1, arq);
-        if(retorno == 1){
-            //grava efetivamente os dados no arquivo ao limpar o buffer
-            fflush(arq);
-            printf("Aluno cadastrado com sucesso ! \n");
-        } else {
-            printf("Erro de gravacao \n");
-        }
+    fseek(arq, 0, SEEK_END);
+    estado = fwrite(&novoAluno, sizeof(TAluno), 1, arq);
+    if(estado == 1){
+        printf("Gravacao bem sucedida\n");
     } else {
-        printf("Ja existe um aluno com esse RA\n");
+        printf("Gravacao mal sucedida\n");
     }
 }
 
-
-
 void exibirTodos (FILE* arq) {
     // Em desenvolvimento: Exibe os dados de todos os alunos cadastrados no arquivo
-    TAluno novoAluno;
-    
+    TAluno Aluno;
+    fseek(arq, 0, SEEK_SET);
+    while(!feof(arq)){
+        fread(&Aluno, sizeof(TAluno), 1, arq);
+        printf(" Nome : %s\n RA : %s\n Media : %f\n Faltas : %d\n", Aluno.nome, Aluno.ra, Aluno.media, Aluno.faltas);
+    }
 }
 
 void exibirAluno(FILE* arq, char ra[]) {
     // Em desenvolvimento: Busca no arquivo um aluno com o RA dado. Se encontrar, exibe os dados.
     // Se não encontrar, informa que o aluno não pertence a turma.
+    
 }
 
 void alterarMedia(FILE* arq, char ra[]) {
