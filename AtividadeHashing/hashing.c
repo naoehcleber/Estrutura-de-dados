@@ -14,6 +14,7 @@ typedef struct noTabela {
 	char placa[8];
 	int posicao;
 	struct noTabela* prox;
+	struct noTabela* ant;
 } NO;
 
 FILE* prepararArquivo(char nome[]);
@@ -26,6 +27,7 @@ void remover(FILE* arq, NO* tabelaHashing[]);
 void exibirCadastro(FILE* arq);
 void criarIndice(FILE* arq, NO* tabelaHashing[]);
 void inserirTabelaHash(NO* tabelaHashing[], char placa[], int pos);
+void desalocarIndice(NO* tabelaHashing[]);
 int hashing(char placa[]);
 void exibirOpcoes();
 
@@ -79,25 +81,37 @@ void fecharArquivo(FILE* arq) {
 	* 4 - Remover o arquivo de carros.
 	* 5 - Renomear o arquivo novo com o nome "carros.dat".
 	*/
+	FILE* copia = prepararArquivo("copia.dat");
+	CARRO carro;
+	while(!feof(arq)){
+		fread(&carro, sizeof(CARRO), 1, arq);
+		if(carro.status == 1){
+			fwrite(&carro, sizeof(CARRO), 1, copia);
+		}
+	}
+	fclose(arq);
+	fclose(copia);
+	remove("carros.dat");
+	rename("copia.dat", "carros.dat");
 }
 
 void criarIndice(FILE* arq, NO* tabelaHashing[]) {
-	/* preencher a tabela de hashing com as chaves dos registros que estão armazenados no arquivo
-	1 - Ler o arquivo registro a registro até o final
-	2 - Para cada registro lido, aplicar a função de hashing à chave (ou seja, a placa)
-	3 - O resultado da função indica a posição na tabela onde a chave será inserida
-	4 - Criar nó, preencher com a chave e a posição dela no arquivo e inserir na tabela, 
-	na lista encadeada correspondente, de forma que a lista permaneça ordenada.
+	/* preencher a tabela de hashing com as chaves dos registros que estï¿½o armazenados no arquivo
+	1 - Ler o arquivo registro a registro atï¿½ o final
+	2 - Para cada registro lido, aplicar a funï¿½ï¿½o de hashing ï¿½ chave (ou seja, a placa)
+	3 - O resultado da funï¿½ï¿½o indica a posiï¿½ï¿½o na tabela onde a chave serï¿½ inserida
+	4 - Criar nï¿½, preencher com a chave e a posiï¿½ï¿½o dela no arquivo e inserir na tabela, 
+	na lista encadeada correspondente, de forma que a lista permaneï¿½a ordenada.
 	*/
 }
 
 void desalocarIndice(NO* tabelaHashing[]) {
-	/* Desalocar os nós que compõem as listas da tabela de hashing.
+	/* Desalocar os nï¿½s que compï¿½em as listas da tabela de hashing.
 	*/
 }
 
 void exibirOpcoes() {
-	printf("Opções \n");
+	printf("Opï¿½ï¿½es \n");
 	printf("1 - Cadastrar um carro \n");
 	printf("2 - Consultar carro \n");
 	printf("3 - Alterar dados do carro \n");
@@ -108,43 +122,77 @@ void exibirOpcoes() {
 }
 
 int buscar(NO* tabelaHashing[], char placa[]) {
-	/* procurar na tabela de hashing a placa desejada e retornar a posição da placa no arquivo
-	   1 - aplicar a função de hashing na chave (ou seja, na placa)
-	   2 - procurar a chave na lista indicada pelo resultado da função (usar busca sequencial melhorada)
-	   3 - caso encontre, retornar a posição da chave no arquivo
-	   4 - caso não encontre, retornar -1 */
+	/* procurar na tabela de hashing a placa desejada e retornar a posiï¿½ï¿½o da placa no arquivo
+	   1 - aplicar a funï¿½ï¿½o de hashing na chave (ou seja, na placa)
+	   2 - procurar a chave na lista indicada pelo resultado da funï¿½ï¿½o (usar busca sequencial melhorada)
+	   3 - caso encontre, retornar a posiï¿½ï¿½o da chave no arquivo
+	   4 - caso nï¿½o encontre, retornar -1 */
 }
 
 void inserirTabelaHash(NO* tabelaHashing[], char placa[], int pos) {
-	/* Inserir na tabela hashing, na lista encadeada indicada pela função de hashing, 
-	* uma chave e sua posição no arquivo.
-	* 1 - Aplicar a função de hashing à chave (ou seja, a placa)
-	* 2 - O resultado da função indica a posição na tabela onde a chave será inserida
-	* 3 - Criar nó, preencher com a chave e a posição dela no arquivo e inserir na tabela, 
-	* na lista encadeada correspondente, de forma que a lista permaneça ordenada.
+	/* Inserir na tabela hashing, na lista encadeada indicada pela funï¿½ï¿½o de hashing, 
+	* uma chave e sua posiï¿½ï¿½o no arquivo.
+	* 1 - Aplicar a funï¿½ï¿½o de hashing ï¿½ chave (ou seja, a placa)
+	* 2 - O resultado da funï¿½ï¿½o indica a posiï¿½ï¿½o na tabela onde a chave serï¿½ inserida
+	* 3 - Criar nï¿½, preencher com a chave e a posiï¿½ï¿½o dela no arquivo e inserir na tabela, 
+	* na lista encadeada correspondente, de forma que a lista permaneï¿½a ordenada.
 	*/
+	int h = hashing(placa);
+	NO* novo = (NO*) malloc(sizeof(NO));
+	NO* atual = tabelaHashing[h];
+
+	strcpy(novo->placa, placa);
+	novo->posicao = pos;
+	novo->prox = NULL;
+	novo->ant = NULL;
+
+	while(atual != NULL){
+		if(atual->ant == NULL){
+			//insercao no inicio
+			novo->prox = tabelaHashing[h];
+			tabelaHashing[h] = novo;
+		} else if(atual->prox == NULL) {
+			//insercao no fim
+			novo->ant = tabelaHashing[h];
+			tabelaHashing[h] = novo;
+		} else {
+			//insercao no meio
+			novo->prox = atual->prox;
+			novo->ant = atual->ant;
+			
+		}
+		atual = atual->prox;
+	}
+
+	
+
 }
 
 void removerTabelaHash(NO* tabelaHashing[], char placa[], int posTabela) {
-	/* Remover da tabela de hashing o nó que contem a placa passada como parâmetro. 
-	* Recebe como parâmetro também a posição na tabela onde a chave se encontra.
+	/* Remover da tabela de hashing o nï¿½ que contem a placa passada como parï¿½metro. 
+	* Recebe como parï¿½metro tambï¿½m a posiï¿½ï¿½o na tabela onde a chave se encontra.
 	*/
 }
 
 int hashing(char placa[]) {
-	/* A função “hashing” recebe com parâmetro a chave (ou seja, a placa) e 
-	* retorna o valor calculado segundo o método da permutação para chaves alfanuméricas 
+	/* A funï¿½ï¿½o ï¿½hashingï¿½ recebe com parï¿½metro a chave (ou seja, a placa) e 
+	* retorna o valor calculado segundo o mï¿½todo da permutaï¿½ï¿½o para chaves alfanumï¿½ricas 
 	* (visto em sala).
 	*/
+	int placaCodigo;
+	for(int i = 0; i < strlen(placa); i++){
+		placaCodigo += placa[i]; 
+	}
+	return placaCodigo % N;
 }
 
 void cadastrar(FILE* arq, NO* tabelaHashing[]) {
 	/* Cadastrar o registro do carro no arquivo e inserir a chave (placa) na tabela de hashing.
 	* 1 - Solicita a placa do carro a ser cadastrado.
 	* 2 - Procura pela placa na tabela de hashing.
-	* 3 - Caso encontre, informa que o carro já está no cadastro.
-	* 4 - Caso não encontre, solicita os demais dados do carro, o insere no final do arquivo.
-	* 5 - Insere a chave, juntamente com sua posição no arquivo, na tabela de hashing.
+	* 3 - Caso encontre, informa que o carro jï¿½ estï¿½ no cadastro.
+	* 4 - Caso nï¿½o encontre, solicita os demais dados do carro, o insere no final do arquivo.
+	* 5 - Insere a chave, juntamente com sua posiï¿½ï¿½o no arquivo, na tabela de hashing.
 	*     Utilize para isso o procedimento "inserirTabelaHash".
 	*/
 }
@@ -153,9 +201,9 @@ void consultar(FILE* arq, NO* tabelaHashing[]) {
 	/* Consultar o registro do carro no arquivo
      * 1 - Solicita a placa do carro a ser consultado.
      * 2 - Procura pela placa na tabela de hashing.
-     * 3 - Caso não encontre, informa que o carro não está no cadastro.
-     * 4 - Caso encontre, vai ao arquivo, na posição indicada, 
-	 *     lê o registro do carro e exibe seus dados.
+     * 3 - Caso nï¿½o encontre, informa que o carro nï¿½o estï¿½ no cadastro.
+     * 4 - Caso encontre, vai ao arquivo, na posiï¿½ï¿½o indicada, 
+	 *     lï¿½ o registro do carro e exibe seus dados.
     */
 }
 
@@ -163,9 +211,9 @@ void alterar(FILE* arq, NO* tabelaHashing[]) {
 	/* Alterar o registro do carro no arquivo
 	 * 1 - Solicita a placa do carro a ser alterado.
 	 * 2 - Procura pela placa na tabela de hashing.
-	 * 3 - Caso não encontre, informa que o carro não está no cadastro.
-	 * 4 - Caso encontre, vai ao arquivo, na posição indicada, lê o registro do carro e exibe seus dados.
-	 *     Pergunta ao usuário quais dados deseja alterar. Efetiva a alteração dos dados no arquivo.
+	 * 3 - Caso nï¿½o encontre, informa que o carro nï¿½o estï¿½ no cadastro.
+	 * 4 - Caso encontre, vai ao arquivo, na posiï¿½ï¿½o indicada, lï¿½ o registro do carro e exibe seus dados.
+	 *     Pergunta ao usuï¿½rio quais dados deseja alterar. Efetiva a alteraï¿½ï¿½o dos dados no arquivo.
 	*/
 }
 
@@ -173,12 +221,12 @@ void remover(FILE* arq, NO* tabelaHashing[]) {
 	/* Remover o registro do carro do arquivo
 	 * 1 - Solicita a placa do carro a ser removido.
 	 * 2 - Procura pela placa na tabela de hashing.
-	 * 3 - Caso não encontre, informa que o carro não está no cadastro.
-	 * 4 - Caso encontre, vai ao arquivo, na posição indicada, lê o registro do carro e exibe seus dados.
-	 *     Pergunta ao usuário se deseja realmente removê-lo. 
-	 *     Efetiva a remoção que consiste em alterando no arquivo o STATUS 
+	 * 3 - Caso nï¿½o encontre, informa que o carro nï¿½o estï¿½ no cadastro.
+	 * 4 - Caso encontre, vai ao arquivo, na posiï¿½ï¿½o indicada, lï¿½ o registro do carro e exibe seus dados.
+	 *     Pergunta ao usuï¿½rio se deseja realmente removï¿½-lo. 
+	 *     Efetiva a remoï¿½ï¿½o que consiste em alterando no arquivo o STATUS 
 	       do registro do carro para 0 (removido).
-	 * 5 - Remove o nó que contém a chave, juntamente com sua posição no arquivo, da tabela de hashing.
+	 * 5 - Remove o nï¿½ que contï¿½m a chave, juntamente com sua posiï¿½ï¿½o no arquivo, da tabela de hashing.
 	*      Utilize para isso o procedimento "removerTabelaHash".
 	*/
 }
