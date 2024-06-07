@@ -104,6 +104,19 @@ void criarIndice(FILE* arq, NO* tabelaHashing[]) {
 	4 - Criar n�, preencher com a chave e a posi��o dela no arquivo e inserir na tabela, 
 	na lista encadeada correspondente, de forma que a lista permane�a ordenada.
 	*/
+	CARRO carro;
+	int pos;
+
+	fseek(arq, 0, SEEK_SET);
+	pos = ftell(arq);
+
+	while(!feof(arq)){
+		fread(&carro, sizeof(CARRO), 1 , arq);
+		
+		inserirTabelaHash(tabelaHashing, carro.placa, pos);
+
+		pos = ftell(arq);
+	}
 }
 
 void desalocarIndice(NO* tabelaHashing[]) {
@@ -128,7 +141,20 @@ int buscar(NO* tabelaHashing[], char placa[]) {
 	   2 - procurar a chave na lista indicada pelo resultado da fun��o (usar busca sequencial melhorada)
 	   3 - caso encontre, retornar a posi��o da chave no arquivo
 	   4 - caso n�o encontre, retornar -1 */
+	int index = hashing(placa);
+	NO* atual;
 	
+	atual = tabelaHashing[index];
+	while(atual != NULL){
+		if(strcmp(atual->placa, placa) == 0){
+			return atual->posicao;
+		} else if(strcmp(placa, atual->placa) > 0){
+			return -1;
+		}
+		atual = atual->prox;
+	}
+
+	return -1;
 }
 
 void inserirTabelaHash(NO* tabelaHashing[], char placa[], int pos) {
@@ -206,6 +232,40 @@ void cadastrar(FILE* arq, NO* tabelaHashing[]) {
 	* 5 - Insere a chave, juntamente com sua posi��o no arquivo, na tabela de hashing.
 	*     Utilize para isso o procedimento "inserirTabelaHash".
 	*/
+	CARRO carro;
+	int resultadoBusca, estado;
+	printf("Informe a placa a ser buscada : ");
+	scanf("%s",&carro.placa);
+	
+	resultadoBusca = buscar(tabelaHashing, carro.placa);
+
+	if(resultadoBusca != -1){
+		printf("Carro já cadastrado! \n");
+		return;
+	} else {
+		printf("Insira a marca do carro : ");
+		scanf("%s", &carro.marca);
+		printf("Insira o modelo do carro : ");
+		scanf("%s", &carro.modelo);
+		printf("Insira a cor do carro : ");
+		scanf("%s", &carro.cor);
+		carro.status = 1;
+
+		//insercao no final do arquivo
+		fseek(arq, 0, SEEK_END);
+		int pos = ftell(arq);
+		estado = fwrite(&carro, sizeof(CARRO), 1, arq);
+		if(estado == 1){
+			printf("Gravacao bem sucedida\n");
+		} else {
+			printf("Gravacao mal sucedida\n");
+		}
+
+		inserirTabelaHash(tabelaHashing, carro.placa, pos);
+
+	}
+
+
 }
 
 void consultar(FILE* arq, NO* tabelaHashing[]) {
@@ -216,6 +276,8 @@ void consultar(FILE* arq, NO* tabelaHashing[]) {
      * 4 - Caso encontre, vai ao arquivo, na posi��o indicada, 
 	 *     l� o registro do carro e exibe seus dados.
     */
+
+
 }
 
 void alterar(FILE* arq, NO* tabelaHashing[]) {
