@@ -128,14 +128,7 @@ int buscar(NO* tabelaHashing[], char placa[]) {
 	   2 - procurar a chave na lista indicada pelo resultado da fun��o (usar busca sequencial melhorada)
 	   3 - caso encontre, retornar a posi��o da chave no arquivo
 	   4 - caso n�o encontre, retornar -1 */
-	int index = hashing(placa);
-	NO* busca;
-	busca = tabelaHashing[index];
-	if(busca == NULL){
-		return -1;
-	}else {
-
-	}
+	
 }
 
 void inserirTabelaHash(NO* tabelaHashing[], char placa[], int pos) {
@@ -148,7 +141,7 @@ void inserirTabelaHash(NO* tabelaHashing[], char placa[], int pos) {
 	*/
 	int index = hashing(placa);
 	NO* novo = (NO*) malloc(sizeof(NO));
-	NO* atual;
+	NO* atual, *anterior;
 
 	strcpy(novo->placa, placa);
 	novo->posicao = pos;
@@ -158,6 +151,7 @@ void inserirTabelaHash(NO* tabelaHashing[], char placa[], int pos) {
 	
 	atual = tabelaHashing[index];
 	
+
 	if(atual == NULL){
 		//posicao vazia
 		tabelaHashing[index] = novo;
@@ -167,6 +161,18 @@ void inserirTabelaHash(NO* tabelaHashing[], char placa[], int pos) {
 			printf("Valor ja presente na tabela. Inclusao cancelada!\n");
 		} else {
 			//se houver colisao
+			//vai criar a fila duplamente encadeada
+			if(strcmp(placa, atual->placa) < 0){
+				novo->prox = atual;
+				novo->ant = atual->ant;
+				atual = atual->prox;
+				
+			} else if(strcmp(placa, atual->placa) > 0){
+				novo->ant = atual;
+				novo->prox = atual->prox;
+				atual = atual->ant;
+
+			}
 			
 		}
 	}
