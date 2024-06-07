@@ -1,6 +1,7 @@
 /* Arquivo com acesso direto via hashing */
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #define N 53
 typedef struct carro {
 	char placa[8];
@@ -127,6 +128,14 @@ int buscar(NO* tabelaHashing[], char placa[]) {
 	   2 - procurar a chave na lista indicada pelo resultado da fun��o (usar busca sequencial melhorada)
 	   3 - caso encontre, retornar a posi��o da chave no arquivo
 	   4 - caso n�o encontre, retornar -1 */
+	int index = hashing(placa);
+	NO* busca;
+	busca = tabelaHashing[index];
+	if(busca == NULL){
+		return -1;
+	}else {
+
+	}
 }
 
 void inserirTabelaHash(NO* tabelaHashing[], char placa[], int pos) {
@@ -137,34 +146,30 @@ void inserirTabelaHash(NO* tabelaHashing[], char placa[], int pos) {
 	* 3 - Criar n�, preencher com a chave e a posi��o dela no arquivo e inserir na tabela, 
 	* na lista encadeada correspondente, de forma que a lista permane�a ordenada.
 	*/
-	int h = hashing(placa);
+	int index = hashing(placa);
 	NO* novo = (NO*) malloc(sizeof(NO));
-	NO* atual = tabelaHashing[h];
+	NO* atual;
 
 	strcpy(novo->placa, placa);
 	novo->posicao = pos;
 	novo->prox = NULL;
 	novo->ant = NULL;
+	
+	
+	atual = tabelaHashing[index];
+	
+	if(atual == NULL){
+		//posicao vazia
+		tabelaHashing[index] = novo;
 
-	while(atual != NULL){
-		if(atual->ant == NULL){
-			//insercao no inicio
-			novo->prox = tabelaHashing[h];
-			tabelaHashing[h] = novo;
-		} else if(atual->prox == NULL) {
-			//insercao no fim
-			novo->ant = tabelaHashing[h];
-			tabelaHashing[h] = novo;
+	} else {
+		if(strcmp(atual->placa, placa) == 0){
+			printf("Valor ja presente na tabela. Inclusao cancelada!\n");
 		} else {
-			//insercao no meio
-			novo->prox = atual->prox;
-			novo->ant = atual->ant;
+			//se houver colisao
 			
 		}
-		atual = atual->prox;
 	}
-
-	
 
 }
 
