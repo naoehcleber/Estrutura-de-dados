@@ -209,6 +209,15 @@ void removerTabelaHash(NO* tabelaHashing[], char placa[], int posTabela) {
 	/* Remover da tabela de hashing o n� que contem a placa passada como par�metro. 
 	* Recebe como par�metro tamb�m a posi��o na tabela onde a chave se encontra.
 	*/
+	NO* aux;
+	
+	aux = tabelaHashing[posTabela];
+
+	aux->prox->ant = aux->ant;
+	aux->ant->prox = aux->prox;
+	free(aux);
+
+	
 }
 
 int hashing(char placa[]) {
@@ -302,6 +311,11 @@ void remover(FILE* arq, NO* tabelaHashing[]) {
 	 * 5 - Remove o n� que cont�m a chave, juntamente com sua posi��o no arquivo, da tabela de hashing.
 	*      Utilize para isso o procedimento "removerTabelaHash".
 	*/
+	CARRO carro;
+
+	printf("Insira a placa do carro a ser removido : ");
+	scanf("%s", &carro.placa);
+
 }
 
 void exibirCadastro(FILE* arq) {
