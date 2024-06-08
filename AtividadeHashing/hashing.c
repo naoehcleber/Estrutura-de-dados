@@ -94,8 +94,10 @@ void fecharArquivo(FILE* arq) {
 	*/
 	FILE* copia = prepararArquivo("copia.dat");
 	CARRO carro;
-	while(!feof(arq)){
-		fread(&carro, sizeof(CARRO), 1, arq);
+	fseek(arq, 0, SEEK_SET);
+	fseek(copia, 0, SEEK_SET);
+	while(fread(&carro, sizeof(CARRO), 1, arq)){
+		
 		if(carro.status == 1){
 			fwrite(&carro, sizeof(CARRO), 1, copia);
 		}
@@ -120,12 +122,14 @@ void criarIndice(FILE* arq, NO* tabelaHashing[]) {
 	inicializarTabelaHashing(tabelaHashing);
 	
     
-    rewind(arq); // Move o ponteiro para o inicio,garantindo que a leitura do arquivo comece no comeco
+    fseek(arq, 0, SEEK_SET); // Move o ponteiro para o inicio,garantindo que a leitura do arquivo comece no comeco
     while (fread(&carro, sizeof(CARRO), 1, arq)) {//enquanto ainda houverem arquivos o fread le eles
-        if (carro.status == 1) { // Considerar apenas carros ativos
+        
+		if (carro.status == 1) { // Considerar apenas carros ativos
+			pos = ftell(arq);
             inserirTabelaHash(tabelaHashing, carro.placa, pos);
         }
-        pos++;
+       
     }
 }
 
@@ -185,48 +189,40 @@ void inserirTabelaHash(NO* tabelaHashing[], char placa[], int pos) {
 	* 3 - Criar n�, preencher com a chave e a posi��o dela no arquivo e inserir na tabela, 
 	* na lista encadeada correspondente, de forma que a lista permane�a ordenada.
 	*/
-	int index = hashing(placa);
-	NO* novo = (NO*) malloc(sizeof(NO));
-	NO* atual, *anterior;
+	
+	int index;
+	NO* novo, *atual;
+
+	novo = (NO*) malloc(sizeof(NO));
+
+	index = hashing(placa);
 
 	strcpy(novo->placa, placa);
-	novo->posicao = pos;
+	novo->posicao = index;
 	novo->prox = NULL;
 	novo->ant = NULL;
-	
-	
-	
-	atual = tabelaHashing[index];
-	anterior = NULL;
 
-	if(atual == NULL){
-		//posicao vazia
+	if(tabelaHashing[index] == NULL){
 		tabelaHashing[index] = novo;
-
+		
 	} else {
+		atual = tabelaHashing[index];
 		if(strcmp(atual->placa, placa) == 0){
-			printf("Valor ja presente na tabela. Inclusao cancelada!\n");
-		} else {
-			//se houver colisao
-			//vai criar a fila duplamente encadeada
-			if(anterior = NULL){
-				novo->prox = tabelaHashing[index];
-				tabelaHashing[index] = novo;
-			}else {
-				if(strcmp(placa, atual->placa) < 0){
-					novo->prox = atual;
-					anterior->prox = novo;
-				
-					
-				} else{
-					novo->prox = atual;
-					anterior->prox = novo;
-				}
-			}
-			atual = atual->prox;
+			printf("Placa ja registrada, insercao cancelada!\n");
+			return;
+		}
+		if(strcmp(atual->placa, placa) < 0){
+			atual->prox = novo;
+			novo->ant = atual;
+			atual = novo;
+			novo->prox = atual->prox;
+		} else if (strcmp(atual->placa, placa) > 0){
+			atual->ant = novo;
+			novo->prox = atual;
+			atual = novo;
+			novo->ant = atual->ant;
 		}
 	}
-
 }
 
 void removerTabelaHash(NO* tabelaHashing[], char placa[], int posTabela) {
@@ -318,6 +314,7 @@ void consultar(FILE* arq, NO* tabelaHashing[]) {
 
 	index = hashing(carro.placa);
 	posicao = buscar(tabelaHashing, carro.placa);
+	//printf("%d\n", posicao);
 
 	if(posicao == -1){
 		printf("Nao achado \n");
@@ -326,11 +323,12 @@ void consultar(FILE* arq, NO* tabelaHashing[]) {
 
 	fseek(arq, posicao * (sizeof(CARRO)), SEEK_SET);
 	fread(&carro, sizeof(CARRO), 1 , arq);
-
-	printf("Placa : %s\n", carro.placa);
-	printf("Marca : %s\n", carro.marca);
-	printf("Modelo : %s\n", carro.modelo);
-	printf("Cor : %s\n",carro.cor);
+	if(carro.status == 1){
+		printf("Placa : %s\n", carro.placa);
+		printf("Marca : %s\n", carro.marca);
+		printf("Modelo : %s\n", carro.modelo);
+		printf("Cor : %s\n",carro.cor);
+	}
 }
 
 void alterar(FILE* arq, NO* tabelaHashing[]) {
@@ -364,8 +362,8 @@ void exibirCadastro(FILE* arq) {
 	CARRO carro;
 
 	fseek(arq, 0, SEEK_SET);
-	while(!feof(arq)){
-		fread(&carro, sizeof(CARRO), 1, arq);
+	while(fread(&carro, sizeof(CARRO), 1, arq)){
+		
 		if(carro.status == 1){
 			printf("Placa : %s\n",carro.placa);
 			printf("Marca : %s\n",carro.marca);
