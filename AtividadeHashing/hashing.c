@@ -43,7 +43,7 @@ int main() {
 	if (cadastro == NULL)
 		printf("Erro na abertura do arquivo. Programa encerrado \n");
 	else {
-		inicializarTabelaHashing(tabelaHashing);
+		
 		criarIndice(cadastro, tabelaHashing);
 		do {
 			exibirOpcoes();
@@ -60,6 +60,7 @@ int main() {
 			case 5: exibirCadastro(cadastro);
 				break;
 			case 0: fecharArquivo(cadastro);
+			printf("Arquivo fechado\n");
 				desalocarIndice(tabelaHashing);
 				break;
 			default: printf("Opcao invalida \n");
@@ -114,18 +115,18 @@ void criarIndice(FILE* arq, NO* tabelaHashing[]) {
 	na lista encadeada correspondente, de forma que a lista permane�a ordenada.
 	*/
 	CARRO carro;
-	int pos;
-
-	fseek(arq, 0, SEEK_SET);
-	pos = ftell(arq);
-
-	while(!feof(arq)){
-		fread(&carro, sizeof(CARRO), 1 , arq);
-		
-		inserirTabelaHash(tabelaHashing, carro.placa, pos);
-
-		pos = ftell(arq);
-	}
+	NO* aux;
+	int index, pos = 0;
+	inicializarTabelaHashing(tabelaHashing);
+	
+    
+    rewind(arq); // Move o ponteiro para o inicio,garantindo que a leitura do arquivo comece no comeco
+    while (fread(&carro, sizeof(CARRO), 1, arq)) {//enquanto ainda houverem arquivos o fread le eles
+        if (carro.status == 1) { // Considerar apenas carros ativos
+            inserirTabelaHash(tabelaHashing, carro.placa, pos);
+        }
+        pos++;
+    }
 }
 
 void desalocarIndice(NO* tabelaHashing[]) {
@@ -208,19 +209,21 @@ void inserirTabelaHash(NO* tabelaHashing[], char placa[], int pos) {
 		} else {
 			//se houver colisao
 			//vai criar a fila duplamente encadeada
-			
-			if(strcmp(placa, atual->placa) < 0){
-				novo->prox = atual;
-				novo->ant = atual->ant;
-				atual = atual->prox;
+			if(anterior = NULL){
+				novo->prox = tabelaHashing[index];
+				tabelaHashing[index] = novo;
+			}else {
+				if(strcmp(placa, atual->placa) < 0){
+					novo->prox = atual;
+					anterior->prox = novo;
 				
-			} else if(strcmp(placa, atual->placa) > 0){
-				novo->ant = atual;
-				novo->prox = atual->prox;
-				atual = atual->ant;
-
+					
+				} else{
+					novo->prox = atual;
+					anterior->prox = novo;
+				}
 			}
-			
+			atual = atual->prox;
 		}
 	}
 
@@ -246,7 +249,7 @@ int hashing(char placa[]) {
 	* retorna o valor calculado segundo o m�todo da permuta��o para chaves alfanum�ricas 
 	* (visto em sala).
 	*/
-	int placaCodigo;
+	int placaCodigo = 0;
 	for(int i = 0; i < strlen(placa); i++){
 		placaCodigo += placa[i]; 
 	}
@@ -270,7 +273,7 @@ void cadastrar(FILE* arq, NO* tabelaHashing[]) {
 	resultadoBusca = buscar(tabelaHashing, carro.placa);
 	printf("%d\n", resultadoBusca);
 	
-	if(resultadoBusca < 0){
+	if(resultadoBusca != -1){
 		printf("Carro já cadastrado! \n");
 		return;
 	} else {
@@ -293,7 +296,7 @@ void cadastrar(FILE* arq, NO* tabelaHashing[]) {
 		}
 
 		inserirTabelaHash(tabelaHashing, carro.placa, pos);
-
+		printf("Insercao na tabela hashing efetuada\n");
 	}
 
 
