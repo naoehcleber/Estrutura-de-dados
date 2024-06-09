@@ -362,7 +362,7 @@ void alterar(FILE* arq, NO* tabelaHashing[]) {
 		return;
 	}
 
-	fseek(arq, sizeof(CARRO), SEEK_SET);
+	fseek(arq, posicaoHashing, SEEK_SET);
 	fread(&carro, sizeof(CARRO), 1 , arq);
 	if(carro.status == 1){
 		printf("Placa : %s\n", carro.placa);
@@ -380,11 +380,16 @@ void alterar(FILE* arq, NO* tabelaHashing[]) {
 			switch (escolha)
 			{
 			case 1:// em desenvolvimento
-				
+				printf("Insira a marca do carro : ");
+				scanf("%s", &carro.marca);
 				break;
 			case 2: // em desenvolvimento
+				printf("Insira o modelo do carro : ");
+				scanf("%s", &carro.modelo);
 				break;
 			case 3:// em desenvolvimento
+				printf("Insira a cor do carro : ");
+				scanf("%s", &carro.cor);
 				break;
 			case 0: 
 				break;
@@ -392,6 +397,7 @@ void alterar(FILE* arq, NO* tabelaHashing[]) {
 				break;
 			}
 		}
+		
 	} else {
 		printf("O registro foi deletado\n");
 	}
