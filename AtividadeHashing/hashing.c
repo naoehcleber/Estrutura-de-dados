@@ -200,7 +200,7 @@ void inserirTabelaHash(NO* tabelaHashing[], char placa[], int pos) {
 	index = hashing(placa);
 
 	strcpy(novo->placa, placa);
-	novo->posicao = index;
+	novo->posicao = pos;
 	novo->prox = NULL;
 	novo->ant = NULL;
 	
