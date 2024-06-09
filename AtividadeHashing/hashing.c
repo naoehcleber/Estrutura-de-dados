@@ -349,9 +349,11 @@ void alterar(FILE* arq, NO* tabelaHashing[]) {
 	 * 4 - Caso encontre, vai ao arquivo, na posi��o indicada, l� o registro do carro e exibe seus dados.
 	 *     Pergunta ao usu�rio quais dados deseja alterar. Efetiva a altera��o dos dados no arquivo.
 	*/
-	CARRO carro;
+	CARRO carro, carroConsulta;
+	FILE* copia = prepararArquivo("copia.dat");
 	int posicaoHashing;
 	int escolha;
+	
 	printf("Insira a placa do carro : ");
 	scanf("%s", &carro.placa);
 
@@ -370,13 +372,15 @@ void alterar(FILE* arq, NO* tabelaHashing[]) {
 		printf("Modelo : %s\n", carro.modelo);
 		printf("Cor : %s\n",carro.cor);
 
-		printf("Qual dado deseja alterar ?\n");
-		printf("1 - Marca\n");
-		printf("2 - Modelo\n");
-		printf("3 - Cor\n");
-		scanf("%d", escolha);
+		
 
 		while(escolha != 0){
+			printf("Qual dado deseja alterar ?\n");
+			printf("1 - Marca\n");
+			printf("2 - Modelo\n");
+			printf("3 - Cor\n");
+			printf("0 - Terminar alteracoes\n");
+			scanf("%d", &escolha);
 			switch (escolha)
 			{
 			case 1:// em desenvolvimento
@@ -397,7 +401,24 @@ void alterar(FILE* arq, NO* tabelaHashing[]) {
 				break;
 			}
 		}
-		
+
+		fseek(arq, 0, SEEK_SET);
+		while(fread(&carroConsulta, sizeof(CARRO), 1 , arq)){
+			if(strcmp(carroConsulta.placa, carro.placa) == 0){
+				//em desenvolvimento
+				fwrite(&carro, sizeof(CARRO), 1, copia);
+				continue;
+			}else {
+				fwrite(&carroConsulta, sizeof(CARRO), 1 ,copia);
+			}
+		}
+
+		fclose(arq);
+		fclose(copia);
+		remove("carros.dat");
+		rename("copia.dat", "carros.dat");
+		prepararArquivo("carros.dat");
+		criarIndice(arq, tabelaHashing);
 	} else {
 		printf("O registro foi deletado\n");
 	}
@@ -415,7 +436,47 @@ void remover(FILE* arq, NO* tabelaHashing[]) {
 	 * 5 - Remove o n� que cont�m a chave, juntamente com sua posi��o no arquivo, da tabela de hashing.
 	*      Utilize para isso o procedimento "removerTabelaHash".
 	*/
+	CARRO carro, carroConsulta;
+	FILE* copia = prepararArquivo("copia.dat");
+	int posicaoHashing;
+	int escolha;
 	
+	printf("Insira a placa do carro : ");
+	scanf("%s", &carro.placa);
+
+	posicaoHashing = buscar(tabelaHashing, carro.placa);
+
+	if(posicaoHashing == -1){
+		printf("Carro nao presente no cadastro\n");
+		return;
+	}
+	
+	fseek(arq, posicaoHashing, SEEK_SET);
+	fread(&carro, sizeof(CARRO), 1 , arq);
+
+	if(carro.status == 0){
+		printf("Carro ja removido !\n");
+		return;
+	}
+
+	printf("Placa : %s\n", carro.placa);
+	printf("Marca : %s\n", carro.marca);
+	printf("Modelo : %s\n", carro.modelo);
+	printf("Cor : %s\n",carro.cor);
+
+	printf("REALMENTE DESEJA REMOVER ESTE REGISTRO ?\n");
+	printf("1 - SIM\n");
+	printf("2 - NAO\n");
+	scanf("%d", &escolha);
+	if(escolha == 2){
+		printf("Remocao cancelada\n");
+		return;
+	} else {
+		carro.status = 0;
+		removerTabelaHash(tabelaHashing, carro.placa, posicaoHashing);
+	}
+
+		
 
 }
 
