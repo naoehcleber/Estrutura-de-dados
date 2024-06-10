@@ -231,35 +231,27 @@ void removerTabelaHash(NO* tabelaHashing[], char placa[], int posTabela) {
 	/* Remover da tabela de hashing o n� que contem a placa passada como par�metro. 
 	* Recebe como par�metro tamb�m a posi��o na tabela onde a chave se encontra.
 	*/
-	NO* aux;
 	
-	if(tabelaHashing[posTabela] == NULL){
-		printf("Posicao vazia na tabela de hashing\n");
-	}else {
-		aux = tabelaHashing[posTabela];
+    NO* atual = tabelaHashing[posTabela];
+    NO* anterior = NULL;
 
-		while(aux != NULL){
-			if(strcmp(aux->placa, placa) == 0){
-				//remocao do registro 
-				if(aux->ant == NULL){
-					aux->prox->ant = NULL;
-					free(aux);
-				} else if(aux->prox = NULL){
-					aux->ant->prox = NULL;
-					free(aux);
-				} else {
-					aux->prox->ant = aux->ant;
-					aux->ant->prox = aux->prox;
-					free(aux);
-				}
-			}else{
-				aux = aux->prox;
-			}
-		}
-		
+    while (atual != NULL && strcmp(atual->placa, placa) != 0) {
+        anterior = atual;
+        atual = atual->prox;
+    }
 
-	}
+    if (atual == NULL) {
+        printf("Placa não encontrada na tabela de hashing.\n");
+        return;
+    }
 
+    if (anterior == NULL) { // Remover o primeiro nó da lista
+        tabelaHashing[posTabela] = atual->prox;
+    } else { // Remover um nó no meio ou no final da lista
+        anterior->prox = atual->prox;
+    }
+
+    free(atual);
 	
 }
 
@@ -459,13 +451,14 @@ void remover(FILE* arq, NO* tabelaHashing[]) {
 	*/
 	CARRO carro, carroConsulta;
 	FILE* copia = prepararArquivo("copia.dat");
-	int posicaoHashing;
+	int posicaoHashing, posTabela;
 	int escolha;
 	
 	printf("Insira a placa do carro : ");
 	scanf("%s", &carro.placa);
 
 	posicaoHashing = buscar(tabelaHashing, carro.placa);
+	posTabela = hashing(carro.placa);
 
 	if(posicaoHashing == -1){
 		printf("Carro nao presente no cadastro\n");
@@ -496,11 +489,12 @@ void remover(FILE* arq, NO* tabelaHashing[]) {
 		carro.status = 0;
 		printf("Status alterado \n");
 
-		removerTabelaHash(tabelaHashing, carro.placa, posicaoHashing);
+		removerTabelaHash(tabelaHashing, carro.placa, posTabela);
 
 		printf("Remocao realizada com sucesso");
 
 		fseek(arq, 0, SEEK_SET);
+		fseek(copia, 0, SEEK_SET);
 		while(fread(&carroConsulta, sizeof(CARRO), 1 , arq)){
 			if(strcmp(carroConsulta.placa, carro.placa) == 0){
 				//em desenvolvimento
