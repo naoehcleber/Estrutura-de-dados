@@ -493,24 +493,7 @@ void remover(FILE* arq, NO* tabelaHashing[]) {
 
 		printf("Remocao realizada com sucesso");
 
-		fseek(arq, 0, SEEK_SET);
-		fseek(copia, 0, SEEK_SET);
-		while(fread(&carroConsulta, sizeof(CARRO), 1 , arq)){
-			if(strcmp(carroConsulta.placa, carro.placa) == 0){
-				//em desenvolvimento
-				fwrite(&carro, sizeof(CARRO), 1, copia);
-				continue;
-			}else {
-				fwrite(&carroConsulta, sizeof(CARRO), 1 ,copia);
-			}
-		}
-
-		fclose(arq);
-		fclose(copia);
-		remove("carros.dat");
-		rename("copia.dat", "carros.dat");
-		prepararArquivo("carros.dat");
-		criarIndice(arq, tabelaHashing);
+		
 	}
 
 		
