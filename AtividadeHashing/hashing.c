@@ -233,11 +233,32 @@ void removerTabelaHash(NO* tabelaHashing[], char placa[], int posTabela) {
 	*/
 	NO* aux;
 	
-	aux = tabelaHashing[posTabela];
+	if(tabelaHashing[posTabela] == NULL){
+		printf("Posicao vazia na tabela de hashing\n");
+	}else {
+		aux = tabelaHashing[posTabela];
 
-	aux->prox->ant = aux->ant;
-	aux->ant->prox = aux->prox;
-	free(aux);
+		while(aux != NULL){
+			if(strcmp(aux->placa, placa) == 0){
+				//remocao do registro 
+				if(aux->ant == NULL){
+					aux->prox->ant = NULL;
+					free(aux);
+				} else if(aux->prox = NULL){
+					aux->ant->prox = NULL;
+					free(aux);
+				} else {
+					aux->prox->ant = aux->ant;
+					aux->ant->prox = aux->prox;
+					free(aux);
+				}
+			}else{
+				aux = aux->prox;
+			}
+		}
+		
+
+	}
 
 	
 }
@@ -358,7 +379,7 @@ void alterar(FILE* arq, NO* tabelaHashing[]) {
 	scanf("%s", &carro.placa);
 
 	posicaoHashing = buscar(tabelaHashing, carro.placa);
-
+	
 	if(posicaoHashing == -1){
 		printf("Carro nao presente no cadastro\n");
 		return;
@@ -473,7 +494,29 @@ void remover(FILE* arq, NO* tabelaHashing[]) {
 		return;
 	} else {
 		carro.status = 0;
+		printf("Status alterado \n");
+
 		removerTabelaHash(tabelaHashing, carro.placa, posicaoHashing);
+
+		printf("Remocao realizada com sucesso");
+
+		fseek(arq, 0, SEEK_SET);
+		while(fread(&carroConsulta, sizeof(CARRO), 1 , arq)){
+			if(strcmp(carroConsulta.placa, carro.placa) == 0){
+				//em desenvolvimento
+				fwrite(&carro, sizeof(CARRO), 1, copia);
+				continue;
+			}else {
+				fwrite(&carroConsulta, sizeof(CARRO), 1 ,copia);
+			}
+		}
+
+		fclose(arq);
+		fclose(copia);
+		remove("carros.dat");
+		rename("copia.dat", "carros.dat");
+		prepararArquivo("carros.dat");
+		criarIndice(arq, tabelaHashing);
 	}
 
 		
